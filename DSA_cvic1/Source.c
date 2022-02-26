@@ -14,6 +14,7 @@ typedef struct node
 
 void insert(NODE* root);
 void insertNode(NODE* root, int value);
+void printNodes(NODE* root);
 
 void main()
 {
@@ -31,6 +32,8 @@ void main()
 	insertNode(root, 21);
 	insertNode(root, 26);
 	insert(root);
+	insert(root);
+	printNodes(root);
 	return 0;
 }
 
@@ -79,6 +82,48 @@ void insertNode(NODE* root, int value)//actual insert based on acquired value
 		akt->parent->right = akt;
 	else
 		akt->parent->left = akt;
+	return 0;
+}
 
+void printNodes(NODE* root)
+{
+	NODE* akt = root;
+	//printing algorithm
+	do
+	{
+		printf(" %d;", akt->value);
+		if (akt->leaf == 1)
+		{
+			if (akt == root)
+				return;
+			if (akt->value < akt->parent->value)//BT2
+			{
+				while (akt->value < akt->parent->value) {
+					akt = akt->parent;
+					if (akt == root)
+						return;
+				}
+			}
+			if (akt->value > akt->parent->value)//BT1
+			{
+				do {
+					akt = akt->parent;
+				} while (akt->left == NULL);
+				akt = akt->left;
+				continue;
+			}
+		}
+		if (akt->right != NULL)//branch right
+		{
+			akt = akt->right;
+			continue;
+		}
+		else//branch left
+		{
+			akt = akt->left;
+			continue;
+		}
+		
+	} while (akt != root);
 	return 0;
 }
