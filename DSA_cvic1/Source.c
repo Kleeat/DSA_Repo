@@ -24,28 +24,31 @@ void main()
 	root->left = root->right = NULL;
 	root->leaf = 1;
 	root->parent = NULL;
-	insert(root);
-	insert(root);
-	insert(root);
-	insert(root);
+	//adding base nodes
+	insertNode(root, 15);
+	insertNode(root, 17);
+	insertNode(root, 11);
+	insertNode(root, 21);
+	insertNode(root, 26);
 	insert(root);
 	return 0;
 }
 
-void insert(NODE* root)
-{
-
-	return 0;
-}
-
-void insert(NODE* root)
+void insert(NODE* root)//user guided insert
 {
 	int value;
-	NODE* akt = root;
-	NODE* parent = NULL;
 	//fetching node value
 	printf("Enter node value: ");
 	scanf("%d", &value);
+	insertNode(root, value);
+	printf("Node successfully inserted.\n");
+	return 0;
+}
+
+void insertNode(NODE* root, int value)//actual insert based on acquired value
+{
+	NODE* akt = root;
+	NODE* parent = NULL;
 	//traversing tree
 	while (akt != NULL)
 	{
@@ -76,7 +79,6 @@ void insert(NODE* root)
 		akt->parent->right = akt;
 	else
 		akt->parent->left = akt;
-	printf("Node successfully inserted.\n");
 
 	return 0;
 }
