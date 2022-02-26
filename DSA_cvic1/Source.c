@@ -3,43 +3,36 @@
 #include <stdlib.h>
 #define _CRT_SECURE_NO_WARNINGS
 
-typedef struct prvok
+typedef struct node
 {
-	int hodnota;
-	struct prvok* lava;
-	struct prvok* prava;
-	int posledny;
-} PRVOK;
-
-/*void clearmem(PRVOK*)
-{
-	
-}
-*/
-void vypis(PRVOK* start)
-{
-	PRVOK* akt;
-	akt = start;
-	int i, j;
-	for (i = 1; akt->posledny != 1; i++)
-	{
-		printf("Level:%d %d<-%d->%d", i, akt->lava->hodnota, akt->hodnota, akt->prava->hodnota);
-		akt = akt->lava;
-	}
-	return 0;
-}
+	int value;
+	struct node* left;
+	struct node* right;
+	struct node* parent;
+	int leaf;
+} NODE;
 
 void main()
 {
-	PRVOK* start = NULL;
-	start = (PRVOK*)malloc(sizeof(PRVOK));
-	start->lava = (PRVOK*)malloc(sizeof(PRVOK));
-	start->prava = (PRVOK*)malloc(sizeof(PRVOK));
-	start->hodnota = 1;
-	start->lava->hodnota = 2;
-	start->lava->posledny = 1;
-	start->prava->hodnota = 3;
-	start->prava->posledny = 1;
-	vypis(start);
+	//initialising base binary tree
+	NODE* start = NULL;
+	start = (NODE*)malloc(sizeof(NODE));
+	start->left = (NODE*)malloc(sizeof(NODE));
+	start->right = (NODE*)malloc(sizeof(NODE));
+	start->right->right = (NODE*)malloc(sizeof(NODE));
+	start->right->left = NULL;
+	start->left->right = (NODE*)malloc(sizeof(NODE));
+	start->left->left = (NODE*)malloc(sizeof(NODE));
+	//setting base values
+	start->value = 20;
+	start->right->value = 21;
+	start->left->value = 15;
+	start->right->left = NULL;
+	start->right->right->value = 26;
+	start->left->left->value = 11;
+	start->left->right->value = 17;
+	start->leaf = start->right->leaf = start->left->leaf = 0;
+	start->right->right->leaf = start->left->left->leaf = start->left->right->leaf = 1;
+
 	return 0;
 }
