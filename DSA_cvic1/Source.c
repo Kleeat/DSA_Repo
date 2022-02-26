@@ -1,7 +1,7 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define _CRT_SECURE_NO_WARNINGS
 
 typedef struct node
 {
@@ -12,27 +12,71 @@ typedef struct node
 	int leaf;
 } NODE;
 
+void insert(NODE* root);
+void insertNode(NODE* root, int value);
+
 void main()
 {
-	//initialising base binary tree
-	NODE* start = NULL;
-	start = (NODE*)malloc(sizeof(NODE));
-	start->left = (NODE*)malloc(sizeof(NODE));
-	start->right = (NODE*)malloc(sizeof(NODE));
-	start->right->right = (NODE*)malloc(sizeof(NODE));
-	start->right->left = NULL;
-	start->left->right = (NODE*)malloc(sizeof(NODE));
-	start->left->left = (NODE*)malloc(sizeof(NODE));
-	//setting base values
-	start->value = 20;
-	start->right->value = 21;
-	start->left->value = 15;
-	start->right->left = NULL;
-	start->right->right->value = 26;
-	start->left->left->value = 11;
-	start->left->right->value = 17;
-	start->leaf = start->right->leaf = start->left->leaf = 0;
-	start->right->right->leaf = start->left->left->leaf = start->left->right->leaf = 1;
+	//initialising base node
+	NODE* root = NULL;
+	root = (NODE*)malloc(sizeof(NODE));
+	root->value = 20;
+	root->left = root->right = NULL;
+	root->leaf = 1;
+	root->parent = NULL;
+	insert(root);
+	insert(root);
+	insert(root);
+	insert(root);
+	insert(root);
+	return 0;
+}
+
+void insert(NODE* root)
+{
+
+	return 0;
+}
+
+void insert(NODE* root)
+{
+	int value;
+	NODE* akt = root;
+	NODE* parent = NULL;
+	//fetching node value
+	printf("Enter node value: ");
+	scanf("%d", &value);
+	//traversing tree
+	while (akt != NULL)
+	{
+		if (akt->value == value)
+		{
+			printf("Node already exists!\n");
+			return 0;
+		}
+		else if (akt->value < value)
+		{
+			parent = akt;
+			akt = akt->right;
+		}	
+		else
+		{
+			parent = akt;
+			akt = akt->left;
+		}
+	}
+	//inserting node
+	akt = (NODE*)malloc(sizeof(NODE));
+	akt->value = value;
+	akt->left = akt->right = NULL;
+	akt->leaf = 1;
+	akt->parent = parent;
+	akt->parent->leaf = 0;
+	if (akt->parent->value < value)
+		akt->parent->right = akt;
+	else
+		akt->parent->left = akt;
+	printf("Node successfully inserted.\n");
 
 	return 0;
 }
