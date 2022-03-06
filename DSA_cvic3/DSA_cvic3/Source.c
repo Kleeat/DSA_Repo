@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #define MAX 50
+#define MAXTH 6
 
 typedef struct node
 {
@@ -30,14 +31,12 @@ void eolrem(char temp[]) {
 	return 0;
 }
 
-NODE* getMin(HEAP* minHeap)
+NODE* getLeaf(NODE* node)
 {
-	return minHeap->array[0];
-}
-
-NODE* getLast(HEAP* minHeap)
-{
-	return minHeap->array[minHeap->size - 1];
+	if (node->left == NULL && node->right == NULL)
+		return 1;
+	else
+		return 0;
 }
 
 void swap(NODE* node1, NODE* node2)
@@ -133,7 +132,28 @@ NODE* huffTreeMaker(HEAP* minHeap)
 		minHeap->array[minHeap->size] = temp;
 		minHeap->size++;
 	}
-	return getMin(minHeap);
+	return minHeap->array[0];
+}
+
+void printTree(NODE* root, int code[], int pos)
+{
+	int i;
+	if (root->left != NULL)
+	{
+		code[pos] = 0;
+		printTree(root->left, code, pos + 1);
+	}
+	if (root->right != NULL)
+	{
+		code[pos] = 1;
+		printTree(root->right, code, pos + 1);
+	}
+	if (getLeaf(root) == 1) {
+		printf("  %c | ", root->symbol);
+		for ( i = 0; i < pos; i++)
+			printf("%d", code[i]);
+		printf("\n");
+	}
 }
 
 void main() {
@@ -146,8 +166,12 @@ void main() {
 	minHeap.array = (NODE**)malloc(MAX * sizeof(NODE*));
 	minHeap.size = 0;
 	heapMaker(temp, &minHeap);
-	heapPrint(minHeap);
+	//heapPrint(minHeap);
 	root = huffTreeMaker(&minHeap);
+	int code[MAXTH];
+	int pos = 0;
+	printf("Huffman codes:\n");
+	printTree(root, code, pos);
 
 	return 0;
 }
