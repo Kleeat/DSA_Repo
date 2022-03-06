@@ -30,6 +30,47 @@ void eolrem(char temp[]) {
 	return 0;
 }
 
+NODE getMin(HEAP minHeap)
+{
+	return minHeap.array[0];
+}
+
+NODE getLast(HEAP minHeap)
+{
+	return minHeap.array[minHeap.size - 1];
+}
+
+void heapify(HEAP* minHeap)
+{
+	int i = minHeap->size / 2 - 1;
+	int r;
+	int l;
+	int smallest;
+	int tfreq;
+	char tsym;
+	if (minHeap->size == 1)
+	{
+		return 0;
+	}
+	for (i; i >= 0; i--)
+	{
+		smallest = i;
+		r = 2 * i + 1;
+		l = 2 * i + 2;
+		if (l < minHeap->size && minHeap->array[l].freq < minHeap->array[i].freq)
+			smallest = l;
+		if (r < minHeap->size && minHeap->array[r].freq < minHeap->array[i].freq)
+			smallest = r;
+		tfreq = minHeap->array[i].freq;
+		tsym = minHeap->array[i].symbol;
+		minHeap->array[i].freq = minHeap->array[smallest].freq;
+		minHeap->array[i].symbol = minHeap->array[smallest].symbol;
+		minHeap->array[smallest].freq = tfreq;
+		minHeap->array[smallest].symbol = tsym;
+	}
+	return 0;
+}
+
 void heapMaker(char orig[], HEAP* minHeap) 
 {
 	char temp[MAX] = {'\0'};
@@ -50,6 +91,7 @@ void heapMaker(char orig[], HEAP* minHeap)
 			minHeap->array[j].freq = freq;
 			minHeap->array[j].symbol = orig[i];
 			minHeap->size++;
+			heapify(minHeap);
 			j++;
 		}
 	}
