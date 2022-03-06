@@ -15,7 +15,7 @@ typedef struct node
 typedef struct heap
 {
 	int size;
-	struct node* array;
+	struct node** array;
 } HEAP;
 
 void eolrem(char temp[]) {
@@ -30,14 +30,33 @@ void eolrem(char temp[]) {
 	return 0;
 }
 
-NODE getMin(HEAP minHeap)
+NODE* getMin(HEAP* minHeap)
 {
-	return minHeap.array[0];
+	return minHeap->array[0];
 }
 
-NODE getLast(HEAP minHeap)
+NODE* getLast(HEAP* minHeap)
 {
-	return minHeap.array[minHeap.size - 1];
+	return minHeap->array[minHeap->size - 1];
+}
+
+void swap(NODE* node1, NODE* node2)
+{
+	NODE temp;
+	temp = *node1;
+	*node1 = *node2;
+	*node2 = temp;
+	return 0;
+}
+
+void heapPrint(HEAP minHeap)//DEBUG
+{
+	int i;
+	for (i = 0; i < minHeap.size; i++)
+	{
+		printf("%c : %d\n", minHeap.array[i]->symbol, minHeap.array[i]->freq);
+	}
+	return 0;
 }
 
 void heapify(HEAP* minHeap)
@@ -46,8 +65,6 @@ void heapify(HEAP* minHeap)
 	int r;
 	int l;
 	int smallest;
-	int tfreq;
-	char tsym;
 	if (minHeap->size == 1)
 	{
 		return 0;
@@ -57,16 +74,11 @@ void heapify(HEAP* minHeap)
 		smallest = i;
 		r = 2 * i + 1;
 		l = 2 * i + 2;
-		if (l < minHeap->size && minHeap->array[l].freq < minHeap->array[i].freq)
+		if (l < minHeap->size && minHeap->array[l]->freq < minHeap->array[i]->freq)
 			smallest = l;
-		if (r < minHeap->size && minHeap->array[r].freq < minHeap->array[i].freq)
+		if (r < minHeap->size && minHeap->array[r]->freq < minHeap->array[i]->freq)
 			smallest = r;
-		tfreq = minHeap->array[i].freq;
-		tsym = minHeap->array[i].symbol;
-		minHeap->array[i].freq = minHeap->array[smallest].freq;
-		minHeap->array[i].symbol = minHeap->array[smallest].symbol;
-		minHeap->array[smallest].freq = tfreq;
-		minHeap->array[smallest].symbol = tsym;
+		swap(minHeap->array[smallest], minHeap->array[i]);
 	}
 	return 0;
 }
@@ -88,22 +100,14 @@ void heapMaker(char orig[], HEAP* minHeap)
 				if (orig[k] == orig[i])
 					freq++;
 			}
-			minHeap->array[j].freq = freq;
-			minHeap->array[j].symbol = orig[i];
+			minHeap->array[j] = (NODE*)malloc(sizeof(NODE));
+			minHeap->array[j]->freq = freq;
+			minHeap->array[j]->symbol = orig[i];
+			minHeap->array[j]->left = minHeap->array[j]->right = NULL;
 			minHeap->size++;
 			heapify(minHeap);
 			j++;
 		}
-	}
-	return 0;
-}
-
-void heapPrint(HEAP minHeap)//DEBUG
-{
-	int i;
-	for (i = 0; i < minHeap.size; i++)
-	{
-		printf("%c : %d\n", minHeap.array[i].symbol, minHeap.array[i].freq);
 	}
 	return 0;
 }
@@ -114,7 +118,7 @@ void main() {
 	fgets(temp, MAX, stdin);
 	eolrem(&temp);
 	HEAP minHeap;
-	minHeap.array = (NODE*)malloc(MAX * sizeof(NODE));
+	minHeap.array = (NODE**)malloc(MAX * sizeof(NODE*));
 	minHeap.size = 0;
 	heapMaker(temp, &minHeap);
 	heapPrint(minHeap);
