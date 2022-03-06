@@ -112,16 +112,42 @@ void heapMaker(char orig[], HEAP* minHeap)
 	return 0;
 }
 
+NODE* extractMin(HEAP* minHeap)
+{
+	NODE* temp = minHeap->array[minHeap->size - 1];
+	swap(minHeap->array[0], minHeap->array[minHeap->size - 1]);
+	minHeap->size--;
+	heapify(minHeap);
+	return temp;
+}
+
+NODE* huffTreeMaker(HEAP* minHeap)
+{
+	NODE* temp;
+	while (minHeap->size > 1)
+	{
+		temp = (NODE*)malloc(sizeof(NODE));
+		temp->left = extractMin(minHeap);
+		temp->right = extractMin(minHeap);
+		temp->freq = temp->left->freq + temp->right->freq;
+		minHeap->array[minHeap->size] = temp;
+		minHeap->size++;
+	}
+	return getMin(minHeap);
+}
+
 void main() {
 	char temp[MAX];
 	printf("Type in your message: ");
 	fgets(temp, MAX, stdin);
 	eolrem(&temp);
 	HEAP minHeap;
+	NODE* root;
 	minHeap.array = (NODE**)malloc(MAX * sizeof(NODE*));
 	minHeap.size = 0;
 	heapMaker(temp, &minHeap);
 	heapPrint(minHeap);
+	root = huffTreeMaker(&minHeap);
 
 	return 0;
 }
