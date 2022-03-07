@@ -5,7 +5,7 @@
 #define MAX 50
 #define MAXTH 6
 
-typedef struct node
+typedef struct node //huffman tree nodes
 {
 	char symbol;
 	int freq;
@@ -13,25 +13,19 @@ typedef struct node
 	struct node* right;
 } NODE;
 
-typedef struct heap
+typedef struct heap //structure for priority queue
 {
 	int size;
 	struct node** array;
 } HEAP;
 
-void eolrem(char temp[]) {
-	int i;
-	for ( i = 0; i < MAX -1; i++)
-	{
-		if (temp[i] == '\n') {
-			break;
-		}
-	}
-	temp[i] = '\0';
+void eolrem(char temp[]) //removes the end of line
+{
+	temp[strlen(temp) - 1] = '\0';
 	return 0;
 }
 
-NODE* getLeaf(NODE* node)
+NODE* getLeaf(NODE* node)//returns 1 if node is a leaf
 {
 	if (node->left == NULL && node->right == NULL)
 		return 1;
@@ -39,7 +33,7 @@ NODE* getLeaf(NODE* node)
 		return 0;
 }
 
-void swap(NODE* node1, NODE* node2)
+void swap(NODE* node1, NODE* node2)//swaps out two nodes
 {
 	NODE temp;
 	temp = *node1;
@@ -58,7 +52,7 @@ void heapPrint(HEAP minHeap)//DEBUG
 	return 0;
 }
 
-void heapify(HEAP* minHeap)
+void heapify(HEAP* minHeap)//heapifying the array
 {
 	int i = minHeap->size / 2 - 1;
 	int r;
@@ -82,7 +76,7 @@ void heapify(HEAP* minHeap)
 	return 0;
 }
 
-void heapMaker(char orig[], HEAP* minHeap) 
+void heapMaker(char orig[], HEAP* minHeap) //extracts unique characters and their frequiencies and saves them in nodes
 {
 	char temp[MAX] = {'\0'};
 	int freq = 0, i, j = 0, k;
@@ -92,14 +86,14 @@ void heapMaker(char orig[], HEAP* minHeap)
 	{
 		if (strchr(temp, orig[i]) == NULL) 
 		{
-			temp[j] = orig[i];
+			temp[j] = orig[i];//temp stores unique characters
 			freq = 0;
 			for ( k = 0; k < oLength; k++)
 			{
 				if (orig[k] == orig[i])
 					freq++;
 			}
-			minHeap->array[j] = (NODE*)malloc(sizeof(NODE));
+			minHeap->array[j] = (NODE*)malloc(sizeof(NODE));//creating the nodes
 			minHeap->array[j]->freq = freq;
 			minHeap->array[j]->symbol = orig[i];
 			minHeap->array[j]->left = minHeap->array[j]->right = NULL;
@@ -111,7 +105,7 @@ void heapMaker(char orig[], HEAP* minHeap)
 	return 0;
 }
 
-NODE* extractMin(HEAP* minHeap)
+NODE* extractMin(HEAP* minHeap)//extracts the minimum node from the priority queue and returns it
 {
 	NODE* temp = minHeap->array[minHeap->size - 1];
 	swap(minHeap->array[0], minHeap->array[minHeap->size - 1]);
@@ -120,10 +114,10 @@ NODE* extractMin(HEAP* minHeap)
 	return temp;
 }
 
-NODE* huffTreeMaker(HEAP* minHeap)
+NODE* huffTreeMaker(HEAP* minHeap)//creates the huffman tree
 {
 	NODE* temp;
-	while (minHeap->size > 1)
+	while (minHeap->size > 1)//building nodes and adding them to the queue until only the root is left
 	{
 		temp = (NODE*)malloc(sizeof(NODE));
 		temp->left = extractMin(minHeap);
@@ -132,10 +126,10 @@ NODE* huffTreeMaker(HEAP* minHeap)
 		minHeap->array[minHeap->size] = temp;
 		minHeap->size++;
 	}
-	return minHeap->array[0];
+	return minHeap->array[0];//return the root node of the tree
 }
 
-void printTree(NODE* root, int code[], int pos)
+void printTree(NODE* root, int code[], int pos)//recursive function for exploring and printing the tree.
 {
 	int i;
 	if (root->left != NULL)
@@ -156,7 +150,8 @@ void printTree(NODE* root, int code[], int pos)
 	}
 }
 
-void main() {
+void main() //MAIN function
+{
 	char temp[MAX];
 	printf("Type in your message: ");
 	fgets(temp, MAX, stdin);
