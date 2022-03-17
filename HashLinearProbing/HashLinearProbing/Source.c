@@ -60,18 +60,19 @@ void addElement(int key, char data[], PAIR* table)//ADDING an element to the tab
 	return 0;
 }
 
-/*void removeElement(int value, PAIR* table)//REMOVE element from table
+void removeElement(int key, PAIR* table)//REMOVE element from table
 {
-	int key = hashFunction(value);
-	if (table[key].value == value)//removing element if it matches the elemnt in the correct key
+	int index = searchElement(key, table);
+	if (table[index].key != -1)//removing element if it matches the elemnt in the correct key
 	{
-		table[key].value = 0;
-		printf("Element %d removed from key: %d\n", value, key);
+		table[index].key = 0;
+		table[index].data[0] = '/0';
+		printf("Element removed from index: %d\n",index);
 	}
 	else//if not than send an error meaasage
-		printf("Element %d is not in the table!\n", value);
+		printf("Element is not in the table!\n");
 	return 0;
-}*/
+}
 
 int searchElement(int key, PAIR* table)//SEARCH element in table, returns index in table
 {
@@ -105,5 +106,7 @@ void main()//MAIN function
 	searchElement(22, table);
 	searchElement(2, table);
 	searchElement(24, table);
+	removeElement(22, table);
+	searchElement(22, table);
 	return 0;
 }
