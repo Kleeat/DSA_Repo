@@ -18,13 +18,18 @@ PAIR* initTable(PAIR* table) { //setting up the empty table
 	return table;
 }
 
-int hashFunction(int key) { //Primitive hash function
+int hashFunction1(int key) { //Primitive hash function
 	int index = key % CAPACITY;
 	return index;
 }
 
+int hashFunction2(int key) { //Second hashing function
+	int index = 19 - (key % 19);
+	return index;
+}
+
 void addElement(int key, char data[], PAIR* table) { //ADDING an element to the table
-	int index = hashFunction(key);
+	int index = hashFunction1(key);
 	if (table[index].key == 0) { //if an empty space can be found on the correct index insert element
 		table[index].key = key;
 		strcpy(table[index].data, data);
@@ -34,16 +39,17 @@ void addElement(int key, char data[], PAIR* table) { //ADDING an element to the 
 		printf("Element %s already in table at index %d\n", data, index);
 		return 0;
 	}
-	else { //if not a collision ha occured - Linear probing
+	else { //if not a collision ha occured - DoubleHashing
 		for (int i = 1; i < CAPACITY; i++) {
-			if (table[(index + i) % CAPACITY].key == 0) {
-				table[(index + i) % CAPACITY].key = key;
-				strcpy(table[(index + i) % CAPACITY].data, data);
-				printf("Element %s inserted at index: %d\n", data, (index + i) % CAPACITY);
+			index = (hashFunction1(key) + i * hashFunction2(key)) % CAPACITY; //Double hashing
+			if (table[index].key == 0) {
+				table[index].key = key;
+				strcpy(table[index].data, data);
+				printf("Element %s inserted at index: %d\n", data, index);
 				return 0;
 			}
-			else if (table[(index + i) % CAPACITY].key == key) {
-				printf("Element %s already in table at index %d\n", data, (index + i) % CAPACITY);
+			else if (table[index].key == key) {
+				printf("Element %s already in table at index %d\n", data, index);
 				return 0;
 			}
 		}
