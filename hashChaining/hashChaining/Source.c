@@ -1,13 +1,19 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <stdlib.h>
-#define CAPACITY 20
+#define CAPACITY 99999989
+#define PRIME 99999989
+#define RAND_MAX 99999989
 
 typedef struct {
 	int key;
 	char data[10];
 } PAIR;
+
+PAIR test[CAPACITY];
+int duplicates;
 
 PAIR* initTable(PAIR* table) { //setting up the empty table
 	table = (PAIR*)malloc(CAPACITY * sizeof(PAIR));
@@ -24,7 +30,7 @@ int hashFunction1(int key) { //Primitive hash function
 }
 
 int hashFunction2(int key) { //Second hashing function
-	int index = 19 - (key % 19);
+	int index = PRIME - (key % PRIME);
 	return index;
 }
 
@@ -33,27 +39,28 @@ void addElement(int key, char data[], PAIR* table) { //ADDING an element to the 
 	if (table[index].key == 0) { //if an empty space can be found on the correct index insert element
 		table[index].key = key;
 		strcpy(table[index].data, data);
-		printf("Element %s inserted at index: %d\n",data , index);
+		//printf("Element %d inserted at index: %d\n",key , index);
 	}
 	else if (table[index].key == key) {
-		printf("Element %s already in table at index %d\n", data, index);
+		//printf("Element %s already in table at index %d\n", data, index);
+		duplicates++;
 		return 0;
 	}
 	else { //if not a collision ha occured - DoubleHashing
-		for (int i = 1; i < CAPACITY; i++) {
+		for (int i = 1; i <= CAPACITY; i++) {
 			index = (hashFunction1(key) + i * hashFunction2(key)) % CAPACITY; //Double hashing
 			if (table[index].key == 0) {
 				table[index].key = key;
 				strcpy(table[index].data, data);
-				printf("Element %s inserted at index: %d\n", data, index);
+				//printf("Element %d inserted at index: %d\n", key, index);
 				return 0;
 			}
 			else if (table[index].key == key) {
-				printf("Element %s already in table at index %d\n", data, index);
+				//printf("Element %s already in table at index %d\n", data, index);
 				return 0;
 			}
 		}
-		printf("There is no empty space in the table for %s\n", data);
+		//printf("There is no empty space in the table for %d\n", key);
 	}
 	return 0;
 }
@@ -62,22 +69,22 @@ int searchElement(int key, PAIR* table)//SEARCH element in table, returns index 
 {
 	int index = hashFunction1(key);
 	if (table[index].key == key) {//check if element is at the correct index
-		printf("Element found at index %d\n", index);
+		//printf("Element found at index %d\n", index);
 		return index;
 	}
 	else if (table[index].key == 0) {//if the space at the index is empty element cannot be found
-		printf("Element not in table\n");
+		//printf("Element not in table\n");
 		return -1;
 	}
 	else {
 		for (int i = 1; i < CAPACITY; i++) {
 			index = (hashFunction1(key) + i * hashFunction2(key)) % CAPACITY; //Double hashing
 			if (table[index].key == key) {
-				printf("Element found at index %d\n", index);
+				//printf("Element found at index %d\n", index);
 				return index;
 			}
 		}
-		printf("Element not in table\n");
+		//printf("Element not in table\n");
 	}
 	return -1;
 }
@@ -88,22 +95,40 @@ void removeElement(int key, PAIR* table)//REMOVE element from table
 	if (table[index].key != -1) { //removing element if it matches the element in the correct key
 		table[index].key = 0;
 		table[index].data[0] = '/0';
-		printf("Element removed from index: %d\n", index);
+		//printf("Element removed from index: %d\n", index);
 	}
 	else//if not than send an error meaasage
-		printf("Element is not in the table!\n");
+		//printf("Element is not in the table!\n");
 	return 0;
+}
+
+void generator() {//generates a table of pseudorandom keys and "data"
+	int j = 1;
+	for (int i = 0; i < CAPACITY; i++) {
+		//if(i % 32767 == 0)
+		//srand(++j);
+		test[i].key = rand();
+		strcpy(test[i].data, "Data\0");
+	}
+	return  0;
 }
 
 void main()//MAIN function
 {
+	long tick1, tick2, time;
+	double seconds;
 	PAIR* table = initTable(&table);
-	addElement(2,"myData", table);
-	addElement(22, "myData2", table);
-	searchElement(22, table);
-	searchElement(2, table);
-	searchElement(24, table);
-	removeElement(22, table);
-	searchElement(22, table);
+	srand(clock());
+	generator();
+	//inserting elements
+	tick1 = clock();
+	for (size_t i = 0; i < CAPACITY; i++)
+	{
+		addElement(test[i].key, test[i].data, table);
+	}
+	tick2 = clock();
+	time = (tick2 - tick1);
+	seconds = (double)time / CLOCKS_PER_SEC;
+	printf("%d elements added in %ld ticks / %lf seconds. %d duplicates were not inserted.\n", CAPACITY, time, seconds, duplicates);
 	return 0;
 }

@@ -24,6 +24,7 @@
     <ProjectGuid>{21c0ca44-d986-462f-9a15-e81b62f72d98}</ProjectGuid>
     <RootNamespace>hashChaining</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>hashDoubleHashing</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
