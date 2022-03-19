@@ -58,40 +58,41 @@ void addElement(int key, char data[], PAIR* table) { //ADDING an element to the 
 	return 0;
 }
 
-void removeElement(int key, PAIR* table)//REMOVE element from table
-{
-	int index = searchElement(key, table);
-	if (table[index].key != -1) { //removing element if it matches the elemnt in the correct key
-		table[index].key = 0;
-		table[index].data[0] = '/0';
-		printf("Element removed from index: %d\n",index);
-	}
-	else//if not than send an error meaasage
-		printf("Element is not in the table!\n");
-	return 0;
-}
-
 int searchElement(int key, PAIR* table)//SEARCH element in table, returns index in table
 {
-	int index = hashFunction(key);
-	if (table[index].key == key) {
+	int index = hashFunction1(key);
+	if (table[index].key == key) {//check if element is at the correct index
 		printf("Element found at index %d\n", index);
 		return index;
 	}
-	else if (table[index].key == 0) {
+	else if (table[index].key == 0) {//if the space at the index is empty element cannot be found
 		printf("Element not in table\n");
 		return -1;
 	}
 	else {
 		for (int i = 1; i < CAPACITY; i++) {
-			if (table[(index + i) % CAPACITY].key == key) {
-				printf("Element found at index %d\n", (index + i) % CAPACITY);
-				return (index + i) % CAPACITY;
+			index = (hashFunction1(key) + i * hashFunction2(key)) % CAPACITY; //Double hashing
+			if (table[index].key == key) {
+				printf("Element found at index %d\n", index);
+				return index;
 			}
 		}
 		printf("Element not in table\n");
 	}
 	return -1;
+}
+
+void removeElement(int key, PAIR* table)//REMOVE element from table
+{
+	int index = searchElement(key, table);
+	if (table[index].key != -1) { //removing element if it matches the element in the correct key
+		table[index].key = 0;
+		table[index].data[0] = '/0';
+		printf("Element removed from index: %d\n", index);
+	}
+	else//if not than send an error meaasage
+		printf("Element is not in the table!\n");
+	return 0;
 }
 
 void main()//MAIN function
