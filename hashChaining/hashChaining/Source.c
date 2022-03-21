@@ -3,9 +3,8 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
-#define CAPACITY 99999989
-#define PRIME 99999989
-#define RAND_MAX 99999989
+#define CAPACITY 999983
+#define PRIME 999983
 
 typedef struct {
 	int key;
@@ -105,9 +104,7 @@ void removeElement(int key, PAIR* table)//REMOVE element from table
 void generator() {//generates a table of pseudorandom keys and "data"
 	int j = 1;
 	for (int i = 0; i < CAPACITY; i++) {
-		//if(i % 32767 == 0)
-		//srand(++j);
-		test[i].key = rand();
+		test[i].key = (rand() * rand()) % CAPACITY;
 		strcpy(test[i].data, "Data\0");
 	}
 	return  0;
@@ -115,20 +112,43 @@ void generator() {//generates a table of pseudorandom keys and "data"
 
 void main()//MAIN function
 {
-	long tick1, tick2, time;
-	double seconds;
+	double seconds, elapsed;
+	time_t start, end;
 	PAIR* table = initTable(&table);
-	srand(clock());
 	generator();
 	//inserting elements
-	tick1 = clock();
-	for (size_t i = 0; i < CAPACITY; i++)
+	int i = 0;
+	start = clock();
+	while(i < CAPACITY)
 	{
 		addElement(test[i].key, test[i].data, table);
+		i++;
 	}
-	tick2 = clock();
-	time = (tick2 - tick1);
-	seconds = (double)time / CLOCKS_PER_SEC;
-	printf("%d elements added in %ld ticks / %lf seconds. %d duplicates were not inserted.\n", CAPACITY, time, seconds, duplicates);
+	end = clock();
+	double time_taken = (double)(end - start);
+	seconds = time_taken / (double)(CLOCKS_PER_SEC);
+	printf("%ld elements added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken,seconds, duplicates);
+	start = clock();
+	i = 0;
+	while (i < CAPACITY)
+	{
+		searchElement(test[i].key, table);
+		i++;
+	}
+	end = clock();
+	time_taken = (double)(end - start);
+	seconds = time_taken / (double)(CLOCKS_PER_SEC);
+	printf("%ld elements searched in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
+	start = clock();
+	i = 0;
+	while (i < CAPACITY)
+	{
+		removeElement(test[i].key, table);
+		i++;
+	}
+	end = clock();
+	time_taken = (double)(end - start);
+	seconds = time_taken / (double)(CLOCKS_PER_SEC);
+	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
 	return 0;
 }
