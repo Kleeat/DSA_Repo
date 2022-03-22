@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+#define CAPACITY 1000000
 
 typedef struct node
 {
@@ -11,6 +13,9 @@ typedef struct node
 	struct node* right;
 } NODE;
 
+int test[CAPACITY];
+int duplicates;
+
 NODE* insertNode(NODE* node, int key);
 NODE* searchNode(NODE* node, int key);
 NODE* deleteNode(NODE* node, int key);
@@ -19,8 +24,53 @@ NODE* leftRotate(NODE* x);
 int getHeight(NODE* node);
 int getBalance(NODE* node);
 
+void generator() {//generates a table of pseudorandom keys
+	int j = 1;
+	for (int i = 0; i < CAPACITY; i++) {
+		test[i] = (rand() * rand()) + rand();
+	}
+	return  0;
+}
+
 void main() {
 	NODE* root = NULL;
+	double seconds, elapsed;
+	time_t start, end;
+	generator();
+	//inserting elements
+	int i = 0;
+	start = clock();
+	while (i < CAPACITY)
+	{
+		root = insertNode(root, test[i]);
+		i++;
+	}
+	end = clock();
+	double time_taken = (double)(end - start);
+	seconds = time_taken / (double)(CLOCKS_PER_SEC);
+	printf("%ld nodes added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken, seconds, duplicates);
+	start = clock();
+	i = 0;
+	while (i < CAPACITY)
+	{
+		searchNode(root, test[i]);
+		i++;
+	}
+	end = clock();
+	time_taken = (double)(end - start);
+	seconds = time_taken / (double)(CLOCKS_PER_SEC);
+	printf("%ld elements searched in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
+	start = clock();
+	i = 0;
+	while (i < CAPACITY)
+	{
+		root = deleteNode(root, test[i]);
+		i++;
+	}
+	end = clock();
+	time_taken = (double)(end - start);
+	seconds = time_taken / (double)(CLOCKS_PER_SEC);
+	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
 	return 0;
 }
 
@@ -64,8 +114,9 @@ NODE* newNode(int key) {
 	NODE* node = (NODE*)malloc(sizeof(NODE));
 	node->height = 1;
 	node->key = key;
-	node->left = node->right = NULL;
-	return &node;
+	node->left = NULL;
+	node->right = NULL;
+	return (node);
 }
 
 // Returns the balance factor for the node
@@ -91,16 +142,20 @@ NODE* insertNode(NODE* node, int key){
 	int balance;
 	// Recursive function to traverse tree and find place to insert
 	if (node == NULL)
-		return newNode(key);
+		return (newNode(key));
+
 	if (key > node->key)
 		node->right = insertNode(node->right, key);
 	else if (key < node->key)
-		node->left = newNode(node->left, key);
-	else
+		node->left = insertNode(node->left, key);
+	else {
 		return node;
+		duplicates++;
+	}
+		
 
 	// Update the balance factor of visited nodes
-	node->height = max(node->left->height, node->right->height) + 1;
+	node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
 
 	balance = getBalance(node);
 	if (balance > 1 && key < node->left->key)

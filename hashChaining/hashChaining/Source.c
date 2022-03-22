@@ -104,7 +104,7 @@ void removeElement(int key, PAIR* table)//REMOVE element from table
 void generator() {//generates a table of pseudorandom keys and "data"
 	int j = 1;
 	for (int i = 0; i < CAPACITY; i++) {
-		test[i].key = (rand() * rand()) % CAPACITY;
+		test[i].key = (rand() * rand()) + rand();
 		strcpy(test[i].data, "Data\0");
 	}
 	return  0;
