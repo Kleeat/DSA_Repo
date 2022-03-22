@@ -34,7 +34,7 @@ int hashFunction2(int key) { //Second hashing function
 }
 
 void addElement(int key, char data[], PAIR* table) { //ADDING an element to the table
-	int index = hashFunction1(key);
+	long index = hashFunction1(key);
 	if (table[index].key == 0) { //if an empty space can be found on the correct index insert element
 		table[index].key = key;
 		strcpy(table[index].data, data);
@@ -66,7 +66,7 @@ void addElement(int key, char data[], PAIR* table) { //ADDING an element to the 
 
 int searchElement(int key, PAIR* table)//SEARCH element in table, returns index in table
 {
-	int index = hashFunction1(key);
+	long index = hashFunction1(key);
 	if (table[index].key == key) {//check if element is at the correct index
 		//printf("Element found at index %d\n", index);
 		return index;
@@ -90,7 +90,7 @@ int searchElement(int key, PAIR* table)//SEARCH element in table, returns index 
 
 void removeElement(int key, PAIR* table)//REMOVE element from table
 {
-	int index = searchElement(key, table);
+	long index = searchElement(key, table);
 	if (table[index].key != -1) { //removing element if it matches the element in the correct key
 		table[index].key = 0;
 		table[index].data[0] = '/0';
@@ -104,7 +104,7 @@ void removeElement(int key, PAIR* table)//REMOVE element from table
 void generator() {//generates a table of pseudorandom keys and "data"
 	int j = 1;
 	for (int i = 0; i < CAPACITY; i++) {
-		test[i].key = (rand() * rand()) + rand();
+		test[i].key = (rand() * rand()) % CAPACITY;
 		strcpy(test[i].data, "Data\0");
 	}
 	return  0;
