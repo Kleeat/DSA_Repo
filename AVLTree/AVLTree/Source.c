@@ -12,6 +12,8 @@ typedef struct node
 } NODE;
 
 NODE* insertNode(NODE* node, int key);
+NODE* searchNode(NODE* node, int key);
+NODE* deleteNode(NODE* node, int key);
 NODE* newNode(int key);
 NODE* leftRotate(NODE* x);
 int getHeight(NODE* node);
@@ -66,7 +68,7 @@ NODE* newNode(int key) {
 	return &node;
 }
 
-// Returns teh balance factor for the node
+// Returns the balance factor for the node
 int getBalance(NODE* node) {
 	if (node == NULL)
 		return 0;
@@ -74,10 +76,20 @@ int getBalance(NODE* node) {
 		return getHeight(node->left) - getHeight(node->right);
 }
 
+//Returns inorder successor
+NODE* getSuccessor(NODE* node) {
+	NODE* temp = node;
+
+	while (temp->left != NULL)
+		temp = temp->left;
+
+	return temp;
+}
+
 // Insert a new node
 NODE* insertNode(NODE* node, int key){
 	int balance;
-	// Recursive function to traverse tree and find place to insert.
+	// Recursive function to traverse tree and find place to insert
 	if (node == NULL)
 		return newNode(key);
 	if (key > node->key)
@@ -91,7 +103,103 @@ NODE* insertNode(NODE* node, int key){
 	node->height = max(node->left->height, node->right->height) + 1;
 
 	balance = getBalance(node);
+	if (balance > 1 && key < node->left->key)
+		return rightRotate(node);
 
+	if (balance < -1 && key > node->right->key)
+		return leftRotate(node);
 
-	return 0;
+	if (balance > 1 && key > node->left->key) {
+		node->left = leftRotate(node->left);
+		return rightRotate(node);
+	}
+
+	if (balance < -1 && key < node->right->key) {
+		node->right = rightRotate(node->right);
+		return leftRotate(node);
+	}
+
+	return node;
+}
+
+//Search for a node
+NODE* searchNode(NODE* node, int key) {
+	if (node == NULL)
+		return node;
+
+	if (key < node->key)
+		node->left = searchNode(node->left, key);
+
+	else if (key > node->key)
+		node->right = searchNode(node->right, key);
+	else
+		return node;
+}
+
+// Delete a node
+NODE* deleteNode(NODE* node, int key) {
+	// Recursive function to traverse tree and find the node to delete
+	NODE* temp;
+	if (node == NULL)
+		return node;
+
+	if (key < node->key)
+		node->left = deleteNode(node->left, key);
+
+	else if (key > node->key)
+		node->right = deleteNode(node->right, key);
+
+	//We arrived to the node to be deleted
+	else {
+		//If node has 1 or 0 children
+		if ((node->left == NULL) || (node->right == NULL)) {
+			if (node->left != NULL) {
+				temp = node->left;
+				*node = *temp;
+			}
+			else if (node->right != NULL) {
+				temp = node->right;
+				*node = *temp;
+			}
+			else {
+				temp = node;
+				node = NULL;
+			}
+			free(temp);
+		}
+		//if node has 2 children
+		else {
+			temp = getSuccessor(node->right);
+
+			node->key = temp->key;
+
+			node->right = deleteNode(node->right, temp->key);
+		}
+	}
+
+	if (node == NULL)
+		return node;
+
+	// Update the balance factor of visited nodes
+	node->height = 1 + max(getHeight(node->left),
+		getHeight(node->right));
+
+	int balance = getBalance(node);
+	if (balance > 1 && getBalance(node->left) >= 0)
+		return rightRotate(node);
+
+	if (balance > 1 && getBalance(node->left) < 0) {
+		node->left = leftRotate(node->left);
+		return rightRotate(node);
+	}
+
+	if (balance < -1 && getBalance(node->right) <= 0)
+		return leftRotate(node);
+
+	if (balance < -1 && getBalance(node->right) > 0) {
+		node->right = rightRotate(node->right);
+		return leftRotate(node);
+	}
+
+	return node;
 }
