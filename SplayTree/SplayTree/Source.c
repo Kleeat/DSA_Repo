@@ -8,7 +8,6 @@
 typedef struct node
 {
 	int key;
-	int height;
 	struct node* left;
 	struct node* right;
 } NODE;
@@ -19,11 +18,10 @@ int duplicates;
 NODE* insertNode(NODE* node, int key);
 NODE* searchNode(NODE* node, int key);
 NODE* deleteNode(NODE* node, int key);
+NODE* splayNode(NODE* node, int key);
 NODE* newNode(int key);
 NODE* leftRotate(NODE* x);
 NODE* rightRotate(NODE* x);
-int getHeight(NODE* node);
-int getBalance(NODE* node);
 
 void generator() {//generates a table of pseudorandom keys
 	int j = 1;
@@ -75,14 +73,6 @@ void main() {
 	return 0;
 }
 
-// Return height for ptr
-int getHeight(NODE* node) {
-	if(node == NULL)
-		return 0;
-	else
-		return node->height;
-}
-
 // Left rotate
 NODE* leftRotate(NODE* x) {
 	NODE* y = x->right;
@@ -90,9 +80,6 @@ NODE* leftRotate(NODE* x) {
 
 	y->left = x;
 	x->right = temp;
-
-	x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
-	y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
 
 	return y;
 }
@@ -105,27 +92,76 @@ NODE* rightRotate(NODE* x) {
 	y->right = x;
 	x->left = temp;
 
-	x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
-	y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
-
 	return y;
+}
+
+// Splaying node to root
+NODE* splayNode(NODE* node, int key) {
+	//if key is at node or node is NULL
+	if (node == NULL || node->key == key)
+		return node;
+
+	// If key is in right subtree
+	if (node->key < key) 
+	{
+		//if left subtree doesn't exist return node
+		if (node->right == NULL) return node;
+
+		// Zag-Zag
+		if (node->right->key < key)
+		{
+			// Splay key to the grandparent of root
+			node->right->right = splay(node->right->right, key);
+			node = leftRotate(node);
+		}
+		else if (node->right->key > key)// Zag-Zig
+		{
+			// Splay key to the grandparent of root
+			node->right->left = splayNode(node->right->left, key);
+
+			if (node->right->left != NULL)
+				node->right = rightRotate(node->right);
+		}
+
+		// Do second rotation for root
+		if (node->right == NULL)
+			return node;
+		else
+			return leftRotate(node);
+	}
+	//else key is in the left subtree
+	else {
+		//if left subtree doesn't exist return node
+		if (node->left == NULL) return node;
+
+		if (node->left->key > key)//Zig-Zig
+		{
+			// Splay key to the grandparent of root
+			node->left->left = splayNode(node->left->left, key);
+			node = rightRotate(node);
+		}
+		else if (node->left->key < key) // Zig-Zag
+		{
+			// Splay key to the grandparent of root
+			node->left->right = splayNode(node->left->right, key);
+
+			if (node->left->right != NULL)
+				node->left = leftRotate(node->left);
+		}
+		// Do second rotation for root Zig
+		if (node->left == NULL)
+			return node;
+		else
+			return rightRotate(node);
+	}
 }
 
 NODE* newNode(int key) {
 	NODE* node = (NODE*)malloc(sizeof(NODE));
-	node->height = 1;
 	node->key = key;
 	node->left = NULL;
 	node->right = NULL;
 	return (node);
-}
-
-// Returns the balance factor for the node
-int getBalance(NODE* node) {
-	if (node == NULL)
-		return 0;
-	else
-		return getHeight(node->left) - getHeight(node->right);
 }
 
 //Returns inorder successor
@@ -140,56 +176,43 @@ NODE* getSuccessor(NODE* node) {
 
 // Insert a new node
 NODE* insertNode(NODE* node, int key){
-	int balance;
-	// Recursive function to traverse tree and find place to insert
+	NODE* temp;
 	if (node == NULL)
 		return (newNode(key));
-
-	if (key > node->key)
-		node->right = insertNode(node->right, key);
-	else if (key < node->key)
-		node->left = insertNode(node->left, key);
-	else {
-		return node;
-		duplicates++;
+	temp = node;
+	while (temp != NULL) {
+		if (temp->key == key) {
+			duplicates++;
+			break;
+		}
+		if (temp->key < key)
+			temp = temp->right;
+		else
+			temp = temp->left;
 	}
-		
+	temp = newNode(key);
+	return splayNode(node, key);
 
-	// Update the balance factor of visited nodes
-	node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
-
-	balance = getBalance(node);
-	if (balance > 1 && key < node->left->key)
-		return rightRotate(node);
-
-	if (balance < -1 && key > node->right->key)
-		return leftRotate(node);
-
-	if (balance > 1 && key > node->left->key) {
-		node->left = leftRotate(node->left);
-		return rightRotate(node);
-	}
-
-	if (balance < -1 && key < node->right->key) {
-		node->right = rightRotate(node->right);
-		return leftRotate(node);
-	}
-
-	return node;
 }
 
 //Search for a node
 NODE* searchNode(NODE* node, int key) {
+	NODE* temp;
 	if (node == NULL)
 		return NULL;
-
-	if (key < node->key)
-		return searchNode(node->left, key);
-
-	else if (key > node->key)
-		return searchNode(node->right, key);
-	else
-		return node;
+	temp = node;
+	while (temp != NULL) {
+		if (temp->key == key) {
+			break;
+		}
+		if (temp->key < key && temp->right != NULL)
+			temp = temp->right;
+		else if (temp->key > key && temp->left != NULL)
+			temp = temp->left;
+		else
+			break;
+	}
+	return splayNode(node, temp->key);
 }
 
 // Delete a node
@@ -236,26 +259,7 @@ NODE* deleteNode(NODE* node, int key) {
 	if (node == NULL)
 		return node;
 
-	// Update the balance factor of visited nodes
-	node->height = 1 + max(getHeight(node->left),
-		getHeight(node->right));
-
-	int balance = getBalance(node);
-	if (balance > 1 && getBalance(node->left) >= 0)
-		return rightRotate(node);
-
-	if (balance > 1 && getBalance(node->left) < 0) {
-		node->left = leftRotate(node->left);
-		return rightRotate(node);
-	}
-
-	if (balance < -1 && getBalance(node->right) <= 0)
-		return leftRotate(node);
-
-	if (balance < -1 && getBalance(node->right) > 0) {
-		node->right = rightRotate(node->right);
-		return leftRotate(node);
-	}
+	
 
 	return node;
 }

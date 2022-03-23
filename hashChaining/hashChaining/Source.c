@@ -45,7 +45,9 @@ void addElement(int key, char data[], PAIR* table) { //ADDING an element to the 
 		duplicates++;
 		return 0;
 	}
-	else { //if not a collision ha occured - DoubleHashing
+
+	//if not a collision ha occured - DoubleHashing
+	else { 
 		for (int i = 1; i <= CAPACITY; i++) {
 			index = (hashFunction1(key) + i * hashFunction2(key)) % CAPACITY; //Double hashing
 			if (table[index].key == 0) {
@@ -91,12 +93,13 @@ int searchElement(int key, PAIR* table)//SEARCH element in table, returns index 
 void removeElement(int key, PAIR* table)//REMOVE element from table
 {
 	long index = searchElement(key, table);
-	if (table[index].key != -1) { //removing element if it matches the element in the correct key
+	//removing element if it matches the element in the correct key
+	if (table[index].key != -1) { 
 		table[index].key = 0;
 		table[index].data[0] = '/0';
 		//printf("Element removed from index: %d\n", index);
 	}
-	else//if not than send an error meaasage
+	else//if not than send an error message
 		//printf("Element is not in the table!\n");
 	return 0;
 }

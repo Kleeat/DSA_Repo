@@ -22,12 +22,14 @@ PAIR* initTable(PAIR* table) { //setting up the empty table
 	return table;
 }
 
-int hashFunction(int key) { //Primitive hash function
+//Primitive hash function
+int hashFunction(int key) { 
 	int index = key % CAPACITY;
 	return index;
 }
 
-void addElement(int key, char data[], PAIR* table) { //ADDING an element to the table
+//ADDING an element to the table
+void addElement(int key, char data[], PAIR* table) { 
 	int index = hashFunction(key);
 	if (table[index].key == 0) { //if an empty space can be found on the correct index insert element
 		table[index].key = key;
@@ -39,15 +41,18 @@ void addElement(int key, char data[], PAIR* table) { //ADDING an element to the 
 		duplicates++;
 		return 0;
 	}
-	else { //if not a collision ha occured - Linear probing
+
+	//if not a collision ha occured - Linear probing
+	else { 
 		for (int i = 1; i < CAPACITY; i++) {
-			if (table[(index + i) % CAPACITY].key == 0) {
-				table[(index + i) % CAPACITY].key = key;
-				strcpy(table[(index + i) % CAPACITY].data, data);
+			index = (index + 1) % CAPACITY;
+			if (table[index].key == 0) {
+				table[index].key = key;
+				strcpy(table[index].data, data);
 				//printf("Element %s inserted at index: %d\n", data, (index + i) % CAPACITY);
 				return 0;
 			}
-			else if (table[(index + i) % CAPACITY].key == key) {
+			else if (table[index].key == key) {
 				//printf("Element %s already in table at index %d\n", data, (index + i) % CAPACITY);
 				return 0;
 			}
@@ -60,12 +65,14 @@ void addElement(int key, char data[], PAIR* table) { //ADDING an element to the 
 void removeElement(int key, PAIR* table)//REMOVE element from table
 {
 	int index = searchElement(key, table);
-	if (table[index].key != -1) { //removing element if it matches the elemnt in the correct key
+		//removing element if it matches the element in the correct key
+	if (table[index].key != -1) { 
 		table[index].key = 0;
 		table[index].data[0] = '/0';
 		//printf("Element removed from index: %d\n",index);
 	}
-	else//if not than send an error meaasage
+	//if not than send an error message
+	else
 		//printf("Element is not in the table!\n");
 	return 0;
 }
