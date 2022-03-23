@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#define CAPACITY 1000000
+#define CAPACITY 10000000
 
 typedef struct node
 {
@@ -29,6 +29,16 @@ void generator() {//generates a table of pseudorandom keys
 		test[i] = (rand() * rand()) + rand();
 	}
 	return  0;
+}
+
+void preOrder(struct node* root)
+{
+	if (root != NULL)
+	{
+		printf("%d ", root->key);
+		preOrder(root->left);
+		preOrder(root->right);
+	}
 }
 
 void main() {
@@ -70,6 +80,7 @@ void main() {
 	time_taken = (double)(end - start);
 	seconds = time_taken / (double)(CLOCKS_PER_SEC);
 	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
+	
 	return 0;
 }
 
@@ -111,7 +122,7 @@ NODE* splayNode(NODE* node, int key) {
 		if (node->right->key < key)
 		{
 			// Splay key to the grandparent of root
-			node->right->right = splay(node->right->right, key);
+			node->right->right = splayNode(node->right->right, key);
 			node = leftRotate(node);
 		}
 		else if (node->right->key > key)// Zag-Zig
@@ -176,90 +187,65 @@ NODE* getSuccessor(NODE* node) {
 
 // Insert a new node
 NODE* insertNode(NODE* node, int key){
-	NODE* temp;
+
 	if (node == NULL)
 		return (newNode(key));
-	temp = node;
-	while (temp != NULL) {
-		if (temp->key == key) {
-			duplicates++;
-			break;
-		}
-		if (temp->key < key)
-			temp = temp->right;
-		else
-			temp = temp->left;
-	}
-	temp = newNode(key);
-	return splayNode(node, key);
 
+	if (node->key == key) {
+		duplicates++;
+		return splayNode(node, key);
+	}
+	if (node->key < key) {
+		node->right = insertNode(node->right, key);
+	}
+	else {
+		node->left = insertNode(node->left, key);
+	}
+
+	return splayNode(node, key);
 }
 
 //Search for a node
 NODE* searchNode(NODE* node, int key) {
-	NODE* temp;
-	if (node == NULL)
-		return NULL;
-	temp = node;
-	while (temp != NULL) {
-		if (temp->key == key) {
-			break;
-		}
-		if (temp->key < key && temp->right != NULL)
-			temp = temp->right;
-		else if (temp->key > key && temp->left != NULL)
-			temp = temp->left;
-		else
-			break;
-	}
-	return splayNode(node, temp->key);
+
+	return splayNode(node, key);
 }
 
 // Delete a node
 NODE* deleteNode(NODE* node, int key) {
-	// Recursive function to traverse tree and find the node to delete
+
 	NODE* temp;
 	if (node == NULL)
+		return NULL;
+
+	// Search for the given key   
+	node = splayNode(node, key);
+
+	// If keys don't match, return node
+	// 
+	if (key != node->key)
 		return node;
 
-	if (key < node->key)
-		node->left = deleteNode(node->left, key);
-
-	else if (key > node->key)
-		node->right = deleteNode(node->right, key);
-
-	//We arrived to the node to be deleted
-	else {
-		//If node has 1 or 0 children
-		if ((node->left == NULL) || (node->right == NULL)) {
-			if (node->left != NULL) {
-				temp = node->left;
-				*node = *temp;
-			}
-			else if (node->right != NULL) {
-				temp = node->right;
-				*node = *temp;
-			}
-			else {
-				temp = node;
-				node = NULL;
-			}
-			free(temp);
-		}
-		//if node has 2 children
-		else {
-			temp = getSuccessor(node->right);
-
-			node->key = temp->key;
-
-			node->right = deleteNode(node->right, temp->key);
-		}
+	// If there is no left subtree 
+	if (!node->left)
+	{
+		temp = node;
+		node = node->right;
 	}
 
-	if (node == NULL)
-		return node;
+	// If there is a left subtree
+	else
+	{
+		temp = node;
 
-	
+		// Splaying the closest key to root from left subtree aka maximum. 
+		node = splayNode(node->left, key);
+
+		//join the two subtrees
+		node->right = temp->right;
+	}
+	// Delete the node
+	free(temp);
 
 	return node;
 }
