@@ -1,64 +1,59 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <time.h>
-#include "avl.h"
 #include "options.h"
+#include "linear.h"
 
-int test[CAPACITY];
+PAIR test[CAPACITY];
 
-void treeGenerator() {//generates a table of pseudorandom keys
+void hashGenerator() {//generates a table of pseudorandom keys and "data"
+	int j = 1;
 	for (int i = 0; i < CAPACITY; i++) {
-		test[i] = (rand() * rand()) + rand();
+		test[i].key = (rand() * rand()) % CAPACITY;
 	}
 	return  0;
 }
 
-void testTrees() {
-	NODE* root = NULL;
+void testHash() {
+
+	printf("%s hash\n", used);
 	double seconds, elapsed;
 	time_t start, end;
-	treeGenerator();
-
-	// Testing Splay tree
-	// Inserting elements
-	printf("%s tree:\n", included);
+	PAIR* table = initTable(&table);
+	hashGenerator();
+	//inserting elements
 	int i = 0;
 	start = clock();
 	while (i < CAPACITY)
 	{
-		root = insertNode(root, test[i]);
+		addElement(test[i].key, test[i].data, table);
 		i++;
 	}
 	end = clock();
 	double time_taken = (double)(end - start);
 	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld nodes added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken, seconds, getDuplicates());
-	
-	// Searching elements
-	i = 0;
+	printf("%ld elements added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken, seconds, getHashDuplicates());
 	start = clock();
+	i = 0;
 	while (i < CAPACITY)
 	{
-		searchNode(root, test[i]);
+		searchElement(test[i].key, table);
 		i++;
 	}
 	end = clock();
 	time_taken = (double)(end - start);
 	seconds = time_taken / (double)(CLOCKS_PER_SEC);
 	printf("%ld elements searched in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	
-	// Deleting elements
-	i = 0;
 	start = clock();
+	i = 0;
 	while (i < CAPACITY)
 	{
-		root = deleteNode(root, test[i]);
+		removeElement(test[i].key, table);
 		i++;
 	}
 	end = clock();
 	time_taken = (double)(end - start);
 	seconds = time_taken / (double)(CLOCKS_PER_SEC);
 	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-
 	return 0;
 }

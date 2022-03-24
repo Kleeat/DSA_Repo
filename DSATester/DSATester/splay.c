@@ -1,18 +1,20 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
+#include "treetester.h"
+
 
 typedef struct node
 {
 	int key;
+	int height;
 	struct node* left;
 	struct node* right;
 } NODE;
 
 int duplicates;
 
-NODE* SPLinsertNode(NODE* node, int key);
-NODE* SPLsearchNode(NODE* node, int key);
-NODE* SPLdeleteNode(NODE* node, int key);
+NODE* insertNode(NODE* node, int key);
+NODE* searchNode(NODE* node, int key);
+NODE* deleteNode(NODE* node, int key);
 NODE* splayNode(NODE* node, int key);
 NODE* newNode(int key);
 NODE* leftRotate(NODE* x);
@@ -125,7 +127,7 @@ NODE* getSuccessor(NODE* node) {
 }
 
 // Insert a new node
-NODE* SPLinsertNode(NODE* node, int key) {
+NODE* insertNode(NODE* node, int key) {
 
 	if (node == NULL)
 		return (newNode(key));
@@ -135,23 +137,23 @@ NODE* SPLinsertNode(NODE* node, int key) {
 		return splayNode(node, key);
 	}
 	if (node->key < key) {
-		node->right = SPLinsertNode(node->right, key);
+		node->right = insertNode(node->right, key);
 	}
 	else {
-		node->left = SPLinsertNode(node->left, key);
+		node->left = insertNode(node->left, key);
 	}
 
 	return splayNode(node, key);
 }
 
 //Search for a node
-NODE* SPLsearchNode(NODE* node, int key) {
+NODE* searchNode(NODE* node, int key) {
 
 	return splayNode(node, key);
 }
 
 // Delete a node
-NODE* SPLdeleteNode(NODE* node, int key) {
+NODE* deleteNode(NODE* node, int key) {
 
 	NODE* temp;
 	if (node == NULL)

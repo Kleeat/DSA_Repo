@@ -1,9 +1,6 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <time.h>
-#define CAPACITY 1000000
+#include "treetester.h"
+
 
 typedef struct node
 {
@@ -13,71 +10,25 @@ typedef struct node
 	struct node* right;
 } NODE;
 
-int test[CAPACITY];
 int duplicates;
 
-NODE* AVLinsertNode(NODE* node, int key);
-NODE* AVLsearchNode(NODE* node, int key);
-NODE* AVLdeleteNode(NODE* node, int key);
+NODE* insertNode(NODE* node, int key);
+NODE* searchNode(NODE* node, int key);
+NODE* deleteNode(NODE* node, int key);
 NODE* newNode(int key);
 NODE* leftRotate(NODE* x);
 NODE* rightRotate(NODE* x);
 int getHeight(NODE* node);
 int getBalance(NODE* node);
 
-void generator() {//generates a table of pseudorandom keys
-	int j = 1;
-	for (int i = 0; i < CAPACITY; i++) {
-		test[i] = (rand() * rand()) + rand();
-	}
-	return  0;
-}
-
-void main() {
-	NODE* root = NULL;
-	double seconds, elapsed;
-	time_t start, end;
-	generator();
-	//inserting elements
-	int i = 0;
-	start = clock();
-	while (i < CAPACITY)
-	{
-		root = AVLinsertNode(root, test[i]);
-		i++;
-	}
-	end = clock();
-	double time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld nodes added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken, seconds, duplicates);
-	start = clock();
-	i = 0;
-	while (i < CAPACITY)
-	{
-		AVLsearchNode(root, test[i]);
-		i++;
-	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements searched in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	start = clock();
-	i = 0;
-	while (i < CAPACITY)
-	{
-		root = AVLdeleteNode(root, test[i]);
-		i++;
-	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	return 0;
+// Get duplicates
+int getDuplicates() {
+	return duplicates;
 }
 
 // Return height for ptr
 int getHeight(NODE* node) {
-	if(node == NULL)
+	if (node == NULL)
 		return 0;
 	else
 		return node->height;
@@ -139,21 +90,21 @@ NODE* getSuccessor(NODE* node) {
 }
 
 // Insert a new node
-NODE* AVLinsertNode(NODE* node, int key){
+NODE* insertNode(NODE* node, int key) {
 	int balance;
 	// Recursive function to traverse tree and find place to insert
 	if (node == NULL)
 		return (newNode(key));
 
 	if (key > node->key)
-		node->right = AVLinsertNode(node->right, key);
+		node->right = insertNode(node->right, key);
 	else if (key < node->key)
-		node->left = AVLinsertNode(node->left, key);
+		node->left = insertNode(node->left, key);
 	else {
 		return node;
 		duplicates++;
 	}
-		
+
 
 	// Update the balance factor of visited nodes
 	node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
@@ -179,31 +130,31 @@ NODE* AVLinsertNode(NODE* node, int key){
 }
 
 //Search for a node
-NODE* AVLsearchNode(NODE* node, int key) {
+NODE* searchNode(NODE* node, int key) {
 	if (node == NULL)
 		return NULL;
 
 	if (key < node->key)
-		return AVLsearchNode(node->left, key);
+		return searchNode(node->left, key);
 
 	else if (key > node->key)
-		return AVLsearchNode(node->right, key);
+		return searchNode(node->right, key);
 	else
 		return node;
 }
 
 // Delete a node
-NODE* AVLdeleteNode(NODE* node, int key) {
+NODE* deleteNode(NODE* node, int key) {
 	// Recursive function to traverse tree and find the node to delete
 	NODE* temp;
 	if (node == NULL)
 		return node;
 
 	if (key < node->key)
-		node->left = AVLdeleteNode(node->left, key);
+		node->left = deleteNode(node->left, key);
 
 	else if (key > node->key)
-		node->right = AVLdeleteNode(node->right, key);
+		node->right = deleteNode(node->right, key);
 
 	//We arrived to the node to be deleted
 	else {
@@ -229,7 +180,7 @@ NODE* AVLdeleteNode(NODE* node, int key) {
 
 			node->key = temp->key;
 
-			node->right = AVLdeleteNode(node->right, temp->key);
+			node->right = deleteNode(node->right, temp->key);
 		}
 	}
 
