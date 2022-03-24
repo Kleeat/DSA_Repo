@@ -1,9 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <time.h>
-#define CAPACITY 10000000
 
 typedef struct node
 {
@@ -12,7 +8,6 @@ typedef struct node
 	struct node* right;
 } NODE;
 
-int test[CAPACITY];
 int duplicates;
 
 NODE* SPLinsertNode(NODE* node, int key);
@@ -23,55 +18,9 @@ NODE* newNode(int key);
 NODE* leftRotate(NODE* x);
 NODE* rightRotate(NODE* x);
 
-void generator() {//generates a table of pseudorandom keys
-	int j = 1;
-	for (int i = 0; i < CAPACITY; i++) {
-		test[i] = (rand() * rand()) + rand();
-	}
-	return  0;
-}
-
-void main() {
-	NODE* root = NULL;
-	double seconds, elapsed;
-	time_t start, end;
-	generator();
-	//inserting elements
-	int i = 0;
-	start = clock();
-	while (i < CAPACITY)
-	{
-		root = SPLinsertNode(root, test[i]);
-		i++;
-	}
-	end = clock();
-	double time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld nodes added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken, seconds, duplicates);
-	start = clock();
-	i = 0;
-	while (i < CAPACITY)
-	{
-		SPLsearchNode(root, test[i]);
-		i++;
-	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements searched in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	start = clock();
-	i = 0;
-	while (i < CAPACITY)
-	{
-		root = SPLdeleteNode(root, test[i]);
-		i++;
-	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	
-	return 0;
+// Get duplicates
+int getDuplicates() {
+	return duplicates;
 }
 
 // Left rotate
@@ -103,7 +52,7 @@ NODE* splayNode(NODE* node, int key) {
 		return node;
 
 	// If key is in right subtree
-	if (node->key < key) 
+	if (node->key < key)
 	{
 		//if left subtree doesn't exist return node
 		if (node->right == NULL) return node;
@@ -176,7 +125,7 @@ NODE* getSuccessor(NODE* node) {
 }
 
 // Insert a new node
-NODE* SPLinsertNode(NODE* node, int key){
+NODE* SPLinsertNode(NODE* node, int key) {
 
 	if (node == NULL)
 		return (newNode(key));
