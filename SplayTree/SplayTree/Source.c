@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#define CAPACITY 10000000
+#define CAPACITY 20
 
 typedef struct node
 {
@@ -26,9 +26,19 @@ NODE* rightRotate(NODE* x);
 void generator() {//generates a table of pseudorandom keys
 	int j = 1;
 	for (int i = 0; i < CAPACITY; i++) {
-		test[i] = (rand() * rand()) + rand();
+		test[i] = rand() % (2 * CAPACITY) + rand() % (2* CAPACITY);
 	}
 	return  0;
+}
+
+void preOrder(NODE* root)
+{
+	if (root != NULL)
+	{
+		printf("%d, ", root->key);
+		preOrder(root->left);
+		preOrder(root->right);
+	}
 }
 
 void main() {
@@ -38,39 +48,29 @@ void main() {
 	generator();
 	//inserting elements
 	int i = 0;
-	start = clock();
 	while (i < CAPACITY)
 	{
 		root = SPLinsertNode(root, test[i]);
 		i++;
 	}
-	end = clock();
-	double time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld nodes added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken, seconds, duplicates);
-	start = clock();
+	printf("After insertion\n");
+	preOrder(root);
 	i = 0;
 	while (i < CAPACITY)
 	{
-		SPLsearchNode(root, test[i]);
+		root = SPLsearchNode(root, test[i]);
 		i++;
 	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements searched in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	start = clock();
+	printf("\nAfter search\n");
+	preOrder(root);
 	i = 0;
-	while (i < CAPACITY)
+	while (i < CAPACITY / 2)
 	{
 		root = SPLdeleteNode(root, test[i]);
 		i++;
 	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	
+	printf("\nAfter deletion\n");
+	preOrder(root);
 	return 0;
 }
 

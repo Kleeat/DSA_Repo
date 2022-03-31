@@ -3,8 +3,8 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
-#define CAPACITY 999983
-#define PRIME 999983
+#define CAPACITY 19
+#define PRIME 19
 
 typedef struct {
 	int key;
@@ -107,10 +107,17 @@ void removeElement(int key, PAIR* table)//REMOVE element from table
 void generator() {//generates a table of pseudorandom keys and "data"
 	int j = 1;
 	for (int i = 0; i < CAPACITY; i++) {
-		test[i].key = (rand() * rand()) % CAPACITY;
+		test[i].key = rand() % (2*CAPACITY);
 		strcpy(test[i].data, "Data\0");
 	}
 	return  0;
+}
+
+void writeOut(PAIR* table) {
+	for (int i = 0; i < CAPACITY; i++)
+	{
+		printf("%d, ", table[i].key);
+	}
 }
 
 void main()//MAIN function
@@ -121,37 +128,26 @@ void main()//MAIN function
 	generator();
 	//inserting elements
 	int i = 0;
-	start = clock();
-	while(i < CAPACITY)
+	while (i < CAPACITY)
 	{
 		addElement(test[i].key, test[i].data, table);
 		i++;
 	}
-	end = clock();
-	double time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements added in %g ticks / %g seconds. %d duplicates were not inserted.\n", CAPACITY, time_taken,seconds, duplicates);
-	start = clock();
+	printf("After insert:\n");
+	writeOut(table);
 	i = 0;
 	while (i < CAPACITY)
 	{
 		searchElement(test[i].key, table);
 		i++;
 	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements searched in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
-	start = clock();
 	i = 0;
-	while (i < CAPACITY)
+	while (i < CAPACITY / 2)
 	{
 		removeElement(test[i].key, table);
 		i++;
 	}
-	end = clock();
-	time_taken = (double)(end - start);
-	seconds = time_taken / (double)(CLOCKS_PER_SEC);
-	printf("%ld elements removed in %g ticks / %g seconds.\n", CAPACITY, time_taken, seconds);
+	printf("\nAfter delete:\n");
+	writeOut(table);
 	return 0;
 }
