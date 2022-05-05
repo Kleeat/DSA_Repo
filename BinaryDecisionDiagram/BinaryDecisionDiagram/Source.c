@@ -29,7 +29,7 @@ BDD* bddCreate(char bfunction[], char variableOrder[]);
 BDDNODE* newNode() {
 	BDDNODE* newNode;
 	newNode = (BDDNODE*)malloc(sizeof(BDDNODE));
-	// TODO set parameters
+	newNode->highChild = newNode->lowChild = NULL;
 	return newNode;
 }
 
@@ -42,6 +42,21 @@ char* popOrder(char string[]) {
 		variables[i] = variables[i++ + 1];
 	}
 	return variables;
+}
+
+// Free tree branch
+void freeBranch(BDDNODE* node) {
+	if (node == NULL)
+		return 0;
+	BDDNODE* right = node->expression;
+	BDDNODE* left = node->lowChild;
+	freeBranch(right);
+	freeBranch(left);
+	if (right != NULL)
+		free(right);
+	if (left != NULL)
+		free(left);
+	return 0;
 }
 
 // Extract high function
@@ -134,8 +149,6 @@ BDDNODE* createBDD(BDDNODE* root, BDDNODE* zero, BDDNODE* one, BDDNODE* parent, 
 			root->highChild = zero;
 			root->lowChild = one;
 		}
-		//root->highChild->highChild = root->lowChild->highChild = NULL;
-		//root->highChild->lowChild = root->lowChild->lowChild = NULL;
 		root->highChild->parent = root->lowChild->parent = root;
 		return root;
 	}
@@ -158,7 +171,7 @@ BDD* bddCreate(char bfunction[], char variableOrder[]) {
 	zero->variable = '0';
 	BDDNODE* one = newNode();
 	strcpy(one->expression, "1");
-	one->variable = "1";
+	one->variable = '1';
 	bdDiagram->root = root;
 	root = createBDD(root, zero, one, NULL, bfunction, variableOrder);
 	return bdDiagram;
