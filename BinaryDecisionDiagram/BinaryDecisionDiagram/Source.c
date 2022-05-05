@@ -115,7 +115,7 @@ char* extractLow(char bfunction[], char variable) {
 	}
 }
 // Creating the reduced binary decision diagram
-BDDNODE* createBDD(BDDNODE* root, BDDNODE* parent, char bfunction[], char variableOrder[]) {
+BDDNODE* createBDD(BDDNODE* root, BDDNODE* zero, BDDNODE* one, BDDNODE* parent, char bfunction[], char variableOrder[]) {
 	char newVariableOrder[MAXLENGHT];
 	char highFunction[MAXLENGHT];
 	char lowFunction[MAXLENGHT];
@@ -127,19 +127,15 @@ BDDNODE* createBDD(BDDNODE* root, BDDNODE* parent, char bfunction[], char variab
 	// Return leaf nodes
 	if (strlen(variableOrder) == 1) {
 		if (bfunction[0] != '!') {
-			root->highChild = newNode();
-			root->highChild->variable = '1';
-			root->lowChild = newNode();
-			root->lowChild->variable = '0';
+			root->highChild = one;
+			root->lowChild = zero;
 		}
 		else {
-			root->highChild = newNode();
-			root->highChild->variable = '0';
-			root->lowChild = newNode();
-			root->lowChild->variable = '1';
+			root->highChild = zero;
+			root->lowChild = one;
 		}
-		root->highChild->highChild = root->lowChild->highChild = NULL;
-		root->highChild->lowChild = root->lowChild->lowChild = NULL;
+		//root->highChild->highChild = root->lowChild->highChild = NULL;
+		//root->highChild->lowChild = root->lowChild->lowChild = NULL;
 		root->highChild->parent = root->lowChild->parent = root;
 		return root;
 	}
@@ -148,8 +144,8 @@ BDDNODE* createBDD(BDDNODE* root, BDDNODE* parent, char bfunction[], char variab
 	strcpy(highFunction, extractHigh(bfunction, root->variable));
 	strcpy(lowFunction, extractLow(bfunction, root->variable));
 	// Create y functions from base function
-	root->highChild = createBDD(newNode(), root, highFunction, newVariableOrder);
-	root->lowChild = createBDD(newNode(), root, lowFunction, newVariableOrder);
+	root->highChild = createBDD(newNode(), zero, one, root, highFunction, newVariableOrder);
+	root->lowChild = createBDD(newNode(), zero, one, root, lowFunction, newVariableOrder);
 	return root;
 }
 
@@ -157,8 +153,14 @@ BDDNODE* createBDD(BDDNODE* root, BDDNODE* parent, char bfunction[], char variab
 BDD* bddCreate(char bfunction[], char variableOrder[]) {
 	BDD* bdDiagram = (BDD*)malloc(sizeof(BDD));
 	BDDNODE* root = newNode();
+	BDDNODE* zero = newNode();
+	strcpy(zero->expression, "0");
+	zero->variable = '0';
+	BDDNODE* one = newNode();
+	strcpy(one->expression, "1");
+	one->variable = "1";
 	bdDiagram->root = root;
-	root = createBDD(root, NULL, bfunction, variableOrder);
+	root = createBDD(root, zero, one, NULL, bfunction, variableOrder);
 	return bdDiagram;
 }
 
