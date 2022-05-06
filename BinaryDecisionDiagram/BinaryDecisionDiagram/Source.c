@@ -156,9 +156,20 @@ BDDNODE* createBDD(BDDNODE* root, BDDNODE* zero, BDDNODE* one, BDDNODE* parent, 
 	strcpy(newVariableOrder, popOrder(variableOrder));
 	strcpy(highFunction, extractHigh(bfunction, root->variable));
 	strcpy(lowFunction, extractLow(bfunction, root->variable));
+	// Reduce the tree
+	if (root->parent != NULL && root->parent->highChild != NULL)
+	{
+		if (strcmp(root->parent->highChild->expression, root->expression) == 0)
+		{
+			printf("hello");
+			//freeBranch(root);
+			return root->parent->highChild;
+		}
+	}
 	// Create y functions from base function
 	root->highChild = createBDD(newNode(), zero, one, root, highFunction, newVariableOrder);
 	root->lowChild = createBDD(newNode(), zero, one, root, lowFunction, newVariableOrder);
+
 	return root;
 }
 
