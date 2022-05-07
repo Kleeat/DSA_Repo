@@ -10,9 +10,9 @@ public class BDD {
 	
 	public BDD(String bfunction, String variableOrder) {
 		this.numberOfVariables = variableOrder.length();
-		this.numberOfNodes = (int) Math.pow(2, numberOfVariables);
-		BDDController controller = new BDDController(root);
-		root = controller.createBDD(null, bfunction, variableOrder);
+		BDDController controller = new BDDController();
+		root = controller.createBDD(bfunction, variableOrder);
+		this.numberOfNodes = controller.getNumberOfNodes();
 	}
 
 }

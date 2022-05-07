@@ -15,12 +15,5 @@ public class Node {
 		this.expression = expression;
 		this.variable = variable;
 	}
-	
-	public Node(String expression, char variable, Node parent) {
-		this.expression = expression;
-		this.variable = variable;
-		this.parent = parent;
-	}
-	
 
 }

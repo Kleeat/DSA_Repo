@@ -1,22 +1,24 @@
+import java.util.ArrayList;
 
 public class BDDController {
 
 	public static Node zero = new Node("0", '0');
 	public static Node one = new Node("1", '1');
-	private Node root;
+	private ArrayList<Node> existingNodes = new ArrayList<Node>();
 	
 	public BDDController() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public BDDController(Node root) {
-		this.root = root;
-	}
-	
-	public Node createBDD(Node parent, String bfunction, String variableOrder) {
+	// Creating the reduced BDD
+	public Node createBDD(String bfunction, String variableOrder) {
+		for (Node node : existingNodes) {
+			if (node.expression.equals(bfunction)) {
+				return node;
+			}
+		}
 		// Creating the node that will be returned
-		Node node = new Node(bfunction, variableOrder.charAt(0), parent);
-		// Preparing for adding the childs
+		Node node = new Node(bfunction, variableOrder.charAt(0));
 		// Checking for leaves
 		if (variableOrder.length() == 1) {
 			if (bfunction.charAt(0) == '!') {
@@ -27,20 +29,26 @@ public class BDDController {
 				node.highChild = one;
 				node.lowChild = zero;
 			}
+			existingNodes.add(node);
 			return node;
 		}
-		// Else branch out from this node
+		// Preparing for adding the children
 		String highFunction = extractHigh(bfunction, variableOrder.charAt(0));
 		String lowFunction = extractLow(bfunction, variableOrder.charAt(0));
 		String newOrder = popOrder(variableOrder);
-		node.highChild = createBDD(node, highFunction, newOrder);
-		node.lowChild = createBDD(node, lowFunction, newOrder);
-		
+		// Not adding useless nodes
+		if (highFunction.equals(lowFunction)) {
+			return createBDD(highFunction, newOrder);
+		}
+		// Else branch out from this node
+		node.highChild = createBDD(highFunction, newOrder);
+		node.lowChild = createBDD(lowFunction, newOrder);
+		existingNodes.add(node);
 		return node;
 	}
 	
 	// Parsing expression to extract the expression for the high child
-	public static String extractHigh(String bfunction, char variable) {
+	private String extractHigh(String bfunction, char variable) {
 		String highFunction = "";
 		int i = 0;
 		while (bfunction.length() > i) {
@@ -70,7 +78,7 @@ public class BDDController {
 	}
 	
 	// Parsing expression to extract the expression for the low child 
-	public static String extractLow(String bfunction, char variable) {
+	private String extractLow(String bfunction, char variable) {
 		String lowFunction = "";
 		int i = 0;
 		while (bfunction.length() > i) {
@@ -100,7 +108,7 @@ public class BDDController {
 	}
 	
 	// Shifting the string to the left
-	public static String popOrder(String variableOrder) {
+	private String popOrder(String variableOrder) {
 		String newOrder = "";
 		int i = 0;
 		while(variableOrder.length() > i+1) {
@@ -108,5 +116,9 @@ public class BDDController {
 			i++;
 		}
 		return newOrder;
+	}
+
+	public int getNumberOfNodes() {
+		return existingNodes.size();
 	}
 }
