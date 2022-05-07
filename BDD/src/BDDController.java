@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class BDDController {
 
@@ -47,8 +48,42 @@ public class BDDController {
 		return node;
 	}
 	
+	public String extractHigh(String bfunction, char variable) {
+		int i = 0;
+		List<String> expressions = new ArrayList<String>();
+		String temp = "";
+		while(i <= bfunction.length()) {
+			if (i == bfunction.length() || bfunction.charAt(i) == '+') {
+				if (temp.indexOf("!" + variable) < 0 && !expressions.contains(temp)) { 
+					expressions.add(temp);
+				}
+				temp = "";
+				i++;
+				continue;
+			}
+			temp += bfunction.charAt(i);
+			i++;
+		}
+		temp = "";
+		for (String string : expressions) {
+			i = 0;
+			if (!temp.isEmpty()) {
+				temp += "+";
+			}
+			while (i < string.length()) {
+				if (i == string.indexOf(variable)) {
+					i++;
+					continue;
+				}
+				temp += string.charAt(i);
+				i++;
+			}
+		}
+		return temp;
+	}
+	
 	// Parsing expression to extract the expression for the high child
-	private String extractHigh(String bfunction, char variable) {
+	/*private String extractHigh(String bfunction, char variable) {
 		String highFunction = "";
 		int i = 0;
 		while (bfunction.length() > i) {
@@ -75,7 +110,7 @@ public class BDDController {
 			}
 		}
 		return highFunction;
-	}
+	}*/
 	
 	// Parsing expression to extract the expression for the low child 
 	private String extractLow(String bfunction, char variable) {
