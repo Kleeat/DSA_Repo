@@ -48,13 +48,14 @@ public class BDDController {
 		return node;
 	}
 	
+	// Parsing expression to extract the expression for the high child 
 	public String extractHigh(String bfunction, char variable) {
 		int i = 0;
 		List<String> expressions = new ArrayList<String>();
 		String temp = "";
 		while(i <= bfunction.length()) {
 			if (i == bfunction.length() || bfunction.charAt(i) == '+') {
-				if (temp.indexOf("!" + variable) < 0 && !expressions.contains(temp)) { 
+				if ((temp.indexOf("!" + variable) < 0 && !expressions.contains(temp)) || temp.indexOf(variable) < 0 ) { 
 					expressions.add(temp);
 				}
 				temp = "";
@@ -82,64 +83,41 @@ public class BDDController {
 		return temp;
 	}
 	
-	// Parsing expression to extract the expression for the high child
-	/*private String extractHigh(String bfunction, char variable) {
-		String highFunction = "";
-		int i = 0;
-		while (bfunction.length() > i) {
-			if (bfunction.charAt(i) != variable) {
-				while (bfunction.length() > i) {
-					if (bfunction.charAt(i) == '+') {
-						i++;
-						break;
-					}
-					else
-						i++;
-				}
-			}
-			else {
-				if (!highFunction.isEmpty()) {
-					highFunction = highFunction + '+';
-				}
-				i++;
-				while(bfunction.length() > i && bfunction.charAt(i) != '+') {
-					highFunction = highFunction + bfunction.charAt(i);
-					i++;
-				}
-				i++;
-			}
-		}
-		return highFunction;
-	}*/
+	
 	
 	// Parsing expression to extract the expression for the low child 
-	private String extractLow(String bfunction, char variable) {
-		String lowFunction = "";
+	public String extractLow(String bfunction, char variable) {
 		int i = 0;
-		while (bfunction.length() > i) {
-			if (bfunction.charAt(i) != '!' &&  bfunction.charAt(i+1) != variable) {
-				while (bfunction.length() > i) {
-					if (bfunction.charAt(i) == '+') {
-						i++;
-						break;
-					}
-					else
-						i++;
+		List<String> expressions = new ArrayList<String>();
+		String temp = "";
+		while(i <= bfunction.length()) {
+			if (i == bfunction.length() || bfunction.charAt(i) == '+') {
+				if ((temp.indexOf("!" + variable) >= 0 && !expressions.contains(temp)) || temp.indexOf(variable) < 0 ) { 
+					expressions.add(temp);
 				}
+				temp = "";
+				i++;
+				continue;
 			}
-			else {
-				if (!lowFunction.isEmpty()) {
-					lowFunction = lowFunction + '+';
+			temp += bfunction.charAt(i);
+			i++;
+		}
+		temp = "";
+		for (String string : expressions) {
+			i = 0;
+			if (!temp.isEmpty()) {
+				temp += "+";
+			}
+			while (i < string.length()) {
+				if (i == string.indexOf(variable)-1) {
+					i+=2;
+					continue;
 				}
-				i += 2;
-				while(bfunction.length() > i && bfunction.charAt(i) != '+') {
-					lowFunction = lowFunction + bfunction.charAt(i);
-					i++;
-				}
+				temp += string.charAt(i);
 				i++;
 			}
 		}
-		return lowFunction;
+		return temp;
 	}
 	
 	// Shifting the string to the left
