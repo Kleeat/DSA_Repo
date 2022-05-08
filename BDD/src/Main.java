@@ -6,10 +6,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		//BDDcreate("a!b!c+!a!bc+ab!c+!ab!c", "abc");
+		//BDDcreate("a!b!c+!a!bc+ab!c+!ab!c+ab!c+a!b+cb", "acb");
 		BDDController controller = new BDDController();
-		System.out.println(controller.extractHigh("a!b!c+!a!bc+ab!c+!ab!c+ab!c+a!b+cb", 'a'));
-		System.out.println(controller.extractLow("a!b!c+!a!bc+ab!c+!ab!c+ab!c+a!b+cb", 'a'));
+		System.out.println(controller.extractHigh("a", 'c'));
+		System.out.println(controller.extractLow("!b!c+b!c+!b+cb", 'c'));
 		
 	}
 
