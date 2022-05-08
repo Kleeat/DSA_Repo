@@ -23,9 +23,12 @@ public class BDDController {
 				value = input.charAt(root.variable - 97);
 				if (value == '1') {
 					root = root.highChild;
-				} else {
+				} 
+				else if (value == '0') {
 					root = root.lowChild;
 				}
+				else
+					return -1;
 			}
 			if(root == zero) {
 				return 0;
