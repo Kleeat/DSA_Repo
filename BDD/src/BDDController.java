@@ -11,6 +11,34 @@ public class BDDController {
 		// TODO Auto-generated constructor stub
 	}
 	
+	// Use the bdd
+	public static int evaluate(BDD bdd, String input) {
+		if (bdd.variableOrder.length() != input.length()) {
+			return -1;
+		}
+		Node root = bdd.root;
+		char value;
+		try {
+			while (root != zero && root != one) {
+				value = input.charAt(root.variable - 97);
+				if (value == '1') {
+					root = root.highChild;
+				} else {
+					root = root.lowChild;
+				}
+			}
+			if(root == zero) {
+				return 0;
+			}
+			else 
+				return 1; 
+			
+		} catch (Exception e) {
+			return -1;
+		}
+	} 
+	
+	
 	// Creating the reduced BDD
 	public Node createBDD(String bfunction, String variableOrder) {
 		for (Node node : existingNodes) {
