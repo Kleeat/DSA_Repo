@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class Tester {
@@ -17,10 +20,23 @@ public class Tester {
 		}
 	}
 	
+	public static String generateOrder(int numberOfVariables) {
+		String variableOrder = "";
+		List<Character> variableList = new ArrayList<Character>();
+		for(int i = 0; i < numberOfVariables; i++ ) {
+			variableList.add((char)(i+97));
+		}
+		Collections.shuffle(variableList);
+		for(int i = 0; i < numberOfVariables; i++ ) {
+			variableOrder += Character.toString(variableList.get(i));
+		}
+		return variableOrder;
+	}
+	
 	public static String generateBFunction(int numberOfVariables) {
 		String bfunction = "";
 		char variable;
-		final int length = 5;
+		final int length = 3;
 		int removedVariables;
 		Random random = new Random();
 		for (int i = 0; i < length; i++) {

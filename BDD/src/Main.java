@@ -7,9 +7,13 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(Tester.generateBFunction(5));
-		//bdd = BDDcreate("a!b!c+!a!bc+ab!c+!ab!c+ab!c+a!b+cb", "acb");
-		//Tester.generate(3);
+		String bfunction = Tester.generateBFunction(3);
+		System.out.println(bfunction);
+		bdd = BDDcreate(bfunction, "acb");
+		Tester.generate(3);
+		for (int i = 0; i < 10; i++) {
+			System.out.println(Tester.generateOrder(4)); 
+		}
 		//BDDController controller = new BDDController();
 		//System.out.println(controller.extractHigh("a", 'c'));
 		//System.out.println(controller.extractLow("!b!c+b!c+!b+cb", 'c'));
