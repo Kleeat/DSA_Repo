@@ -16,6 +16,7 @@ public class Tester {
 				value = "0" + value;
 			}
 			System.out.print(value + " -> ");
+			System.out.print(Tester.booleanSolver(Main.bdd, value) + " -> ");
 			Main.BDDuse(Main.bdd, value);
 		}
 	}
@@ -31,6 +32,42 @@ public class Tester {
 			variableOrder += Character.toString(variableList.get(i));
 		}
 		return variableOrder;
+	}
+	
+	public static int booleanSolver(BDD bdd, String input) {
+		int value = 1;
+		int index;
+		int i = 0;
+		String bfunction = bdd.expression;
+		if (input.length() != bdd.numberOfVariables) {
+			return -1;
+		}
+		while (i < bfunction.length()) {
+			if (bfunction.charAt(i) == '!') {
+				i++;
+				index = (int)bfunction.charAt(i) - 97;
+				value *= 1 - ((int)input.charAt(index) - 48);
+				i++;
+				continue;
+			}
+			if (bfunction.charAt(i) == '+') {
+				if (value > 0) {
+					return 1;
+				}
+				i++;
+				value = 1;
+				continue;
+			}
+			index = (int)bfunction.charAt(i) - 97;
+			value *= (int)input.charAt(index) - 48;
+			i++;
+		}
+		if (value > 0) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
 	}
 	
 	public static String generateBFunction(int numberOfVariables) {
