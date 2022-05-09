@@ -21,10 +21,10 @@
     <ClCompile Include="treetester.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="avl.c">
+    <ClCompile Include="hashtester.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hashtester.c">
+    <ClCompile Include="splay.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linear.c">
@@ -38,13 +38,13 @@
     <ClInclude Include="options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="avl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="hashtester.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="linear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="splay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

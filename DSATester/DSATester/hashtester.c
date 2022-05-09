@@ -16,7 +16,7 @@ void hashGenerator() {//generates a table of pseudorandom keys and "data"
 
 void testHash() {
 
-	printf("%s hash\n", used);
+	printf(" hash\n");
 	double seconds, elapsed;
 	time_t start, end;
 	PAIR* table = initTable(&table);
