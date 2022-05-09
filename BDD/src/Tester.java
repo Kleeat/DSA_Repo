@@ -1,3 +1,5 @@
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,15 +11,30 @@ public class Tester {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static void generate(int length) {
-		for (int i = 0; i < Math.pow(2, length); i++) {
+	public static void test(int lenght, int numberOfTimes) {
+		for (int i = 0; i < numberOfTimes; i++) {
+			String bfunction = generateBFunction(lenght);
+			String variableOrder = generateOrder(lenght);
+			System.out.println(bfunction);
+			long start = System.nanoTime();
+			BDD bdd = BDDController.BDDcreate(bfunction, variableOrder);
+			long end = System.nanoTime();
+			System.out.println("BDD created in: " + (end - start) + " nanoseconds");
+			getValues(bdd);
+			System.out.println();
+ 		}
+	}
+	public static void getValues(BDD bdd) {
+		for (int i = 0; i < Math.pow(2, bdd.numberOfVariables); i++) {
 			String value = Integer.toBinaryString(i);
-			while(value.length() != length) {
+			while(value.length() != bdd.numberOfVariables) {
 				value = "0" + value;
 			}
 			System.out.print(value + " -> ");
-			System.out.print(Tester.booleanSolver(Main.bdd, value) + " -> ");
-			Main.BDDuse(Main.bdd, value);
+			System.out.print(BDDController.BDDuse(bdd, value) + " expected -> ");
+			System.out.println(Tester.booleanSolver(bdd, value));
+			
+			
 		}
 	}
 	

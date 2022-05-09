@@ -12,7 +12,7 @@ public class BDDController {
 	}
 	
 	// Use the bdd
-	public static int evaluate(BDD bdd, String input) {
+	public static int BDDuse(BDD bdd, String input) {
 		if (bdd.variableOrder.length() != input.length()) {
 			return -1;
 		}
@@ -41,6 +41,9 @@ public class BDDController {
 		}
 	} 
 	
+	public static BDD BDDcreate(String bfunction, String variableOrder) {
+		return new BDD(bfunction, variableOrder);
+	}
 	
 	// Creating the reduced BDD
 	public Node createBDD(String bfunction, String variableOrder) {
