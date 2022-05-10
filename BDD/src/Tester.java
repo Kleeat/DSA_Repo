@@ -1,5 +1,3 @@
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,31 +10,65 @@ public class Tester {
 	}
 
 	public static void test(int lenght, int numberOfTimes) {
+		long averageCreateTime = 0;
+		long averageTraverseTime = 0;
+		float averageReduction = 0;
+		BDDController controller = new BDDController();
+		long allNodes = 0;
+		for (int i = 0; i < lenght; i++) {
+			allNodes += (long)Math.pow(2, i);
+		}
 		for (int i = 0; i < numberOfTimes; i++) {
 			String bfunction = generateBFunction(lenght);
 			String variableOrder = generateOrder(lenght);
 			System.out.println(bfunction);
+			// Creating the BDD
 			long start = System.nanoTime();
 			BDD bdd = BDDController.BDDcreate(bfunction, variableOrder);
 			long end = System.nanoTime();
+			averageCreateTime += (end - start);
 			System.out.println("BDD created in: " + (end - start) + " nanoseconds");
-			getValues(bdd);
+			float reduction = ((float)(allNodes - bdd.numberOfNodes) / allNodes) * 100; 
+			System.out.println("Reduction percentage: " + reduction + "%");
+			averageReduction += reduction;
+			// Using the BDD for all values
+			averageTraverseTime += getValues(bdd);
 			System.out.println();
  		}
+		averageCreateTime /= numberOfTimes;
+		System.out.println("Average time to create BDD in nanoseconds is: " + averageCreateTime);
+		averageReduction /= numberOfTimes;
+		System.out.println("Average reduction precentage: " + averageReduction + "%");
+		averageTraverseTime /= numberOfTimes;
+		System.out.println("Average time to evaluate expression in nanoseconds is : " + averageTraverseTime);
 	}
-	public static void getValues(BDD bdd) {
+	
+	
+	public static long getValues(BDD bdd) {
+		long time = 0;
 		for (int i = 0; i < Math.pow(2, bdd.numberOfVariables); i++) {
 			String value = Integer.toBinaryString(i);
 			while(value.length() != bdd.numberOfVariables) {
 				value = "0" + value;
 			}
+			// Looking trough the tree
+			long start = System.nanoTime();
+			int result = BDDController.BDDuse(bdd, value);
+			int expectedResult = Tester.booleanSolver(bdd, value);
+			long end = System.nanoTime();
+			time += (end - start);
+			
 			System.out.print(value + " -> ");
-			System.out.print(BDDController.BDDuse(bdd, value) + " expected -> ");
-			System.out.println(Tester.booleanSolver(bdd, value));
-			
-			
+			System.out.print(result + " expected -> ");
+			System.out.println(expectedResult);
+			if (result != expectedResult) {
+				System.out.println("-----ERROR RESULT AND EXPECTED RESULT DO NOT MATCH!-----");
+			}
 		}
+		System.out.println("Time to traverse tree in nanoseconds: " + time);
+		return time;
 	}
+	
 	
 	public static String generateOrder(int numberOfVariables) {
 		String variableOrder = "";
@@ -50,6 +82,7 @@ public class Tester {
 		}
 		return variableOrder;
 	}
+	
 	
 	public static int booleanSolver(BDD bdd, String input) {
 		int value = 1;
@@ -87,10 +120,12 @@ public class Tester {
 		}
 	}
 	
+	
 	public static String generateBFunction(int numberOfVariables) {
 		String bfunction = "";
 		char variable;
-		final int length = 3;
+		// Lenght of the boolean expression, how many ()
+		final int length = 6;
 		int removedVariables;
 		Random random = new Random();
 		for (int i = 0; i < length; i++) {

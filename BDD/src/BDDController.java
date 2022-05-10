@@ -5,7 +5,7 @@ public class BDDController {
 
 	public static Node zero = new Node("0", '0');
 	public static Node one = new Node("1", '1');
-	private ArrayList<Node> existingNodes = new ArrayList<Node>();
+	private static ArrayList<Node> existingNodes = new ArrayList<Node>();
 	
 	public BDDController() {
 		// TODO Auto-generated constructor stub
@@ -46,7 +46,7 @@ public class BDDController {
 	}
 	
 	// Creating the reduced BDD
-	public Node createBDD(String bfunction, String variableOrder) {
+	public static Node createBDD(String bfunction, String variableOrder) {
 		for (Node node : existingNodes) {
 			if (node.expression.equals(bfunction)) {
 				return node;
@@ -92,7 +92,7 @@ public class BDDController {
 	}
 	
 	// Parsing expression to extract the expression for the high child 
-	public String extractHigh(String bfunction, char variable) {
+	private static String extractHigh(String bfunction, char variable) {
 		int i = 0;
 		int j = 0;
 		List<String> expressions = new ArrayList<String>();
@@ -143,7 +143,7 @@ public class BDDController {
 	
 	
 	// Parsing expression to extract the expression for the low child 
-	public String extractLow(String bfunction, char variable) {
+	private static String extractLow(String bfunction, char variable) {
 		int i = 0;
 		int j = 0;
 		List<String> expressions = new ArrayList<String>();
@@ -192,7 +192,7 @@ public class BDDController {
 	}
 	
 	// Shifting the string to the left
-	private String popOrder(String variableOrder) {
+	private static String popOrder(String variableOrder) {
 		String newOrder = "";
 		int i = 0;
 		while(variableOrder.length() > i+1) {
@@ -202,7 +202,9 @@ public class BDDController {
 		return newOrder;
 	}
 
-	public int getNumberOfNodes() {
-		return existingNodes.size();
+	public static int getNumberOfNodes() {
+		int size = existingNodes.size();
+		existingNodes.clear();
+		return size;
 	}
 }
